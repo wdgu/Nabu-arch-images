@@ -446,7 +446,7 @@ jobs:
             sleep 5
           done
           # Use PipeWire's JACK compatibility layer instead of the conflicting jack2 package.
-          pacman -R --noconfirm jack2 || true
+          if pacman -Q jack2 >/dev/null 2>&1; then pacman -R --noconfirm jack2; fi
           pacman -S --noconfirm upower gdm gnome-menus gnome-backgrounds gnome-control-center gnome-keyring nautilus xdg-desktop-portal-gnome gnome-console pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts gnome-software loupe gnome-text-editor gnome-tweaks extension-manager ffmpeg-iris mpv-iris code vlc-nabu widevine
           pacman -S --noconfirm nabu-tablet-mode camera-studio system-monitor nabu-torch
           EOF
@@ -616,7 +616,7 @@ jobs:
             sleep 5
           done
           # Avoid the jack2 / pipewire-jack conflict in the base rootfs.
-          pacman -R --noconfirm jack2 || true
+          if pacman -Q jack2 >/dev/null 2>&1; then pacman -R --noconfirm jack2; fi
           pacman -S --noconfirm upower bluedevil breeze breeze-gtk discover drkonqi kde-gtk-config kdecoration kdeplasma-addons kinfocenter kscreen kwallet-pam plasma-browser-integration plasma-desktop plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace powerdevil print-manager qqc2-breeze-style sddm-kcm spectacle systemsettings xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts plasma-keyboard gwenview konsole dolphin ark kate qt6-multimedia-ffmpeg tesseract-data-chi_sim sddm-nabu nabu-tablet-mode nabu-autobrightness camera-studio system-monitor nabu-torch stylus-popup
           systemctl --global enable nabu-autobrightness.service
           systemctl --global enable stylus-popup.service || true
