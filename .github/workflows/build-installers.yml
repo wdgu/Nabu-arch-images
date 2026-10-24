@@ -10,7 +10,7 @@ on:
       kernel_version:
         description: "Kernel version to install (e.g. 7.2.10-1); empty = latest in [nabu] repo"
         type: string
-        default: "7.2.10-1"
+        default: ""
         required: false
       nightly_kernel_url:
         description: "URL to a ZIP containing kernel/headers (nightly.link); empty = use repo/version"
@@ -91,7 +91,14 @@ jobs:
       - name: Delete default user
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          userdel alarm
+          # Remove the generic Arch Linux ARM account only if it exists.
+          if id alarm >/dev/null 2>&1; then
+            userdel -r alarm
+          fi
+          # Ensure a previous/partial rootfs does not leave a conflicting target account.
+          if id user >/dev/null 2>&1; then
+            userdel -r user
+          fi
           EOF
 
       - name: Set locale
