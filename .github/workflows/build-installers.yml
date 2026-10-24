@@ -227,10 +227,11 @@ jobs:
           systemctl enable displaylink
           EOF
 
-      - name: Disable sshd
+      - name: Enable SSH server
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          systemctl disable sshd
+          pacman -S --noconfirm --needed openssh
+          systemctl enable sshd
           EOF
 
       - name: Install and configure sudo
