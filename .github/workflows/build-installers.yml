@@ -143,7 +143,12 @@ jobs:
             fi
             sleep 5
           done
+          # Bootstrap only the Arch Linux CN keyring: require a valid package signature,
+          # but temporarily allow an imported key whose trust has not yet been established.
+          # Remove this exception immediately after the keyring is installed.
+          sed -i '/^\[archlinuxcn\]/a SigLevel = Required TrustAll' /etc/pacman.conf
           pacman -S --noconfirm archlinuxcn-keyring
+          sed -i '/^SigLevel = Required TrustAll$/d' /etc/pacman.conf
           EOF
 
       - name: Remove generic kernel
