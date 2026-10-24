@@ -102,7 +102,7 @@ If your device doesn't have the required `esp` and `linux` partitions, create th
 
 5. **Reboot**: Select **Reboot > System**
 
-6. **Default credentials**: `user` / `123456`
+6. **Default credentials**: `wdgu` / `123456`
 
 ### Dual/Triple Boot with Android/Windows
 
