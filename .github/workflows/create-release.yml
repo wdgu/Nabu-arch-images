@@ -195,11 +195,11 @@ jobs:
 
           | Account | Username | Password |
           | :--- | :--- | :--- |
-          | **Default User** | `user` | `123456` |
-          | **Root (sudo)** | `user` | `123456` |
+          | **Default User** | `wdgu` | `123456` |
+          | **sudo access** | `wdgu` | `123456` |
 
           - **Auto-login:** The system automatically boots and logs into the desktop environment.
-          - **Root access:** Use password `123456` for `sudo` operations and terminal root access.
+          - **sudo access:** Use password `123456` when prompted for `sudo` operations.
 
           ---
 
