@@ -304,8 +304,11 @@ jobs:
       - name: Install base packages
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad
+          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go bleachbit kate flatpak noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad
           systemctl enable iio-sensor-proxy || true
+          # Install the ARM64 Flatpak build of wiliwili from Flathub.
+          flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install --system --noninteractive -y flathub cn.xfangfang.wiliwili
           EOF
 
       - name: Enable bluetooth and network manager
