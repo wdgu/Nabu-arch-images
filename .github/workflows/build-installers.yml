@@ -304,11 +304,8 @@ jobs:
       - name: Install base packages
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go bleachbit kate flatpak noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad
+          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad totem openssh brave-bin
           systemctl enable iio-sensor-proxy || true
-          # Install the ARM64 Flatpak build of wiliwili from Flathub.
-          flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-          flatpak install --system --noninteractive -y flathub cn.xfangfang.wiliwili
           EOF
 
       - name: Enable bluetooth and network manager
@@ -344,7 +341,7 @@ jobs:
           chown -R wdgu:wdgu /home/wdgu
           EOF
 
-      - name: Install AUR packages (paru, FlClash, Brave)
+      - name: Install AUR packages (paru, FlClash, wiliwili)
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
           set -e
@@ -356,7 +353,7 @@ jobs:
           pacman -S --noconfirm --needed cargo
           su - aurbuild -c 'git clone https://aur.archlinux.org/paru.git /tmp/paru && cd /tmp/paru && makepkg --noconfirm'
           pacman -U --noconfirm /tmp/paru/paru-*.pkg.tar.*
-          su - aurbuild -c 'paru --noconfirm --needed -S flclash-bin brave-bin'
+          su - aurbuild -c 'paru --noconfirm --needed -S flclash-bin wiliwili'
           # losslesscut-bin may not publish an ARM64 build; do not fail the whole image if unavailable.
           su - aurbuild -c 'paru --noconfirm --needed -S losslesscut-bin' || echo 'Skipping losslesscut-bin: unavailable/build failed on aarch64'
           userdel -r aurbuild || true
@@ -447,7 +444,7 @@ jobs:
             fi
             sleep 5
           done
-          pacman -S --noconfirm upower gdm gnome-menus gnome-backgrounds gnome-control-center gnome-keyring nautilus xdg-desktop-portal-gnome gnome-console pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts flatpak gnome-software loupe gnome-text-editor gnome-tweaks extension-manager
+          pacman -S --noconfirm upower gdm gnome-menus gnome-backgrounds gnome-control-center gnome-keyring nautilus xdg-desktop-portal-gnome gnome-console pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts gnome-software loupe gnome-text-editor gnome-tweaks extension-manager ffmpeg-iris mpv-iris code vlc-nabu widevine
           pacman -S --noconfirm nabu-tablet-mode camera-studio system-monitor nabu-torch
           EOF
 
@@ -615,7 +612,7 @@ jobs:
             fi
             sleep 5
           done
-          pacman -S --noconfirm upower bluedevil breeze breeze-gtk discover drkonqi kde-gtk-config kdecoration kdeplasma-addons kinfocenter kscreen kwallet-pam plasma-browser-integration plasma-desktop plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace powerdevil print-manager qqc2-breeze-style sddm-kcm spectacle systemsettings xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts plasma-keyboard gwenview konsole dolphin ark kate qt6-multimedia-ffmpeg flatpak sddm-nabu nabu-tablet-mode nabu-autobrightness camera-studio system-monitor nabu-torch stylus-popup
+          pacman -S --noconfirm upower bluedevil breeze breeze-gtk discover drkonqi kde-gtk-config kdecoration kdeplasma-addons kinfocenter kscreen kwallet-pam plasma-browser-integration plasma-desktop plasma-nm plasma-pa plasma-systemmonitor plasma-vault plasma-workspace powerdevil print-manager qqc2-breeze-style sddm-kcm spectacle systemsettings xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts plasma-keyboard gwenview konsole dolphin ark kate qt6-multimedia-ffmpeg sddm-nabu nabu-tablet-mode nabu-autobrightness camera-studio system-monitor nabu-torch stylus-popup
           systemctl --global enable nabu-autobrightness.service
           systemctl --global enable stylus-popup.service || true
           EOF
