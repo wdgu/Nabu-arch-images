@@ -97,9 +97,24 @@ jobs:
       - name: Set locale
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          sed -i "s|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|g" "/etc/locale.gen"
+          sed -i "s|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|g" /etc/locale.gen
+          sed -i "s|#zh_CN.UTF-8 UTF-8|zh_CN.UTF-8 UTF-8|g" /etc/locale.gen
           locale-gen
-          echo "LANG=en_US.UTF-8" > "/etc/locale.conf"
+          echo "LANG=zh_CN.UTF-8" > /etc/locale.conf
+          ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+          systemctl enable systemd-timesyncd
+          cat > /etc/profile.d/fcitx5.sh <<'EOM'
+          export GTK_IM_MODULE=fcitx
+          export QT_IM_MODULE=fcitx
+          export XMODIFIERS=@im=fcitx
+          export SDL_IM_MODULE=fcitx
+          EOM
+          cat >> /etc/environment <<'EOM'
+          GTK_IM_MODULE=fcitx
+          QT_IM_MODULE=fcitx
+          XMODIFIERS=@im=fcitx
+          SDL_IM_MODULE=fcitx
+          EOM
           EOF
 
       - name: Configure pacman options
@@ -114,6 +129,11 @@ jobs:
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
           sed -i '/^\[core\]/i \[nabu]\nSigLevel = Never\nServer = https://github.com/Kumar-Jy/nabu-pkgs/releases/download/repo\n' /etc/pacman.conf
+          cat >> /etc/pacman.conf <<'EOM'
+
+          [archlinuxcn]
+          Server = https://repo.archlinuxcn.org/$arch
+          EOM
           n=0
           until pacman -Sy --noconfirm; do
             n=$((n+1))
@@ -123,6 +143,7 @@ jobs:
             fi
             sleep 5
           done
+          pacman -S --noconfirm archlinuxcn-keyring
           EOF
 
       - name: Remove generic kernel
@@ -292,7 +313,7 @@ jobs:
       - name: Install base packages
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi
+          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go cargo bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad totem mpv-iris ffmpeg-iris brave-bin
           systemctl enable iio-sensor-proxy || true
           EOF
 
@@ -306,8 +327,29 @@ jobs:
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
           groupadd -f -r i2c
-          useradd -m -G wheel,audio,video,storage,optical,i2c,input -s /bin/bash user
-          echo "user:123456" | chpasswd
+          useradd -m -G wheel,audio,video,storage,optical,i2c,input -s /bin/bash wdgu
+          echo "wdgu:123456" | chpasswd
+          install -d -m 0755 /home/wdgu/.config
+          chown -R wdgu:wdgu /home/wdgu
+          EOF
+
+      - name: Install requested AUR packages
+        run: |
+          sudo arch-chroot ./mountpoint bash - <<'EOF'
+          set -e
+          useradd -m -G wheel -s /bin/bash aurbuild
+          echo 'aurbuild ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-aurbuild
+          chmod 0440 /etc/sudoers.d/99-aurbuild
+          su - aurbuild -c 'git clone --depth=1 https://aur.archlinux.org/paru.git /tmp/paru && cd /tmp/paru && makepkg --noconfirm'
+          pacman -U --noconfirm /tmp/paru/paru-*.pkg.tar.*
+          su - aurbuild -c 'paru --noconfirm --needed -S flclash-bin'
+          su - aurbuild -c 'paru --noconfirm --needed -S wiliwili'
+          if ! su - aurbuild -c 'paru --noconfirm --needed -S losslesscut-bin'; then
+            echo 'WARNING: losslesscut-bin could not be built/installed for aarch64; continuing without it.'
+          fi
+          userdel -r aurbuild
+          rm -f /etc/sudoers.d/99-aurbuild
+          rm -rf /tmp/paru
           EOF
 
       - name: Clear pacman cache
@@ -393,7 +435,7 @@ jobs:
             fi
             sleep 5
           done
-          pacman -S --noconfirm upower gdm gnome-menus gnome-backgrounds gnome-control-center gnome-keyring nautilus xdg-desktop-portal-gnome gnome-console pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts flatpak gnome-software loupe gnome-text-editor
+          pacman -S --noconfirm upower gdm gnome-menus gnome-backgrounds gnome-control-center gnome-keyring nautilus xdg-desktop-portal-gnome gnome-console pipewire pipewire-pulse pipewire-jack wireplumber pipewire-libcamera gst-plugin-pipewire gst-plugin-libcamera gst-plugins-good libcamera-tools noto-fonts flatpak gnome-software loupe gnome-text-editor gnome-tweaks extension-manager
           pacman -S --noconfirm nabu-tablet-mode camera-studio system-monitor nabu-torch
           EOF
 
@@ -414,7 +456,7 @@ jobs:
           cat > /etc/gdm/custom.conf << 'EOL'
           [daemon]
           AutomaticLoginEnable=True
-          AutomaticLogin=user
+          AutomaticLogin=wdgu
           EOL
           EOF
 
@@ -582,7 +624,7 @@ jobs:
           systemctl enable nabu-tablet-mode
           cat > /etc/sddm.conf.d/autologin.conf << 'EOL'
           [Autologin]
-          User=user
+          User=wdgu
           Session=plasma.desktop
           EOL
           EOF
