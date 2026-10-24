@@ -297,7 +297,7 @@ jobs:
       - name: Install base packages
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go paru bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad
+          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad
           systemctl enable iio-sensor-proxy || true
           EOF
 
