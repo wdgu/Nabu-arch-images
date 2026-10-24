@@ -416,6 +416,17 @@ jobs:
           /opt/nabu/postinstall extract-efi
           EOF
 
+      - name: Diagnose JACK package before desktop install
+        run: |
+          sudo arch-chroot ./mountpoint bash - <<'EOF'
+          echo "===== jack2 package information ====="
+          pacman -Qi jack2 || true
+          echo "===== pacman history for jack2 ====="
+          grep -E '\\[ALPM\\] (installed|removed|upgraded) jack2([[:space:]]|$)' /var/log/pacman.log 2>/dev/null || true
+          echo "===== installed packages mentioning JACK ====="
+          pacman -Q | grep -Ei '(^|-)jack([0-9-]|$)|pipewire' || true
+          EOF
+
       - name: Install GNOME Desktop
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
@@ -582,6 +593,17 @@ jobs:
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
           /opt/nabu/postinstall extract-efi
+          EOF
+
+      - name: Diagnose JACK package before desktop install
+        run: |
+          sudo arch-chroot ./mountpoint bash - <<'EOF'
+          echo "===== jack2 package information ====="
+          pacman -Qi jack2 || true
+          echo "===== pacman history for jack2 ====="
+          grep -E '\\[ALPM\\] (installed|removed|upgraded) jack2([[:space:]]|$)' /var/log/pacman.log 2>/dev/null || true
+          echo "===== installed packages mentioning JACK ====="
+          pacman -Q | grep -Ei '(^|-)jack([0-9-]|$)|pipewire' || true
           EOF
 
       - name: Install Plasma Desktop
