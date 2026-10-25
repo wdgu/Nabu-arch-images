@@ -349,6 +349,7 @@ jobs:
           pacman -U --noconfirm /tmp/paru/paru-*.pkg.tar.*
           su - aurbuild -c 'paru --noconfirm --needed -S flclash-bin'
           su - aurbuild -c 'paru --noconfirm --needed -S wiliwili'
+          su - aurbuild -c 'paru --noconfirm --needed -S vboard'
           if ! su - aurbuild -c 'paru --noconfirm --needed -S losslesscut-bin'; then
             echo 'WARNING: losslesscut-bin could not be built/installed for aarch64; continuing without it.'
           fi
