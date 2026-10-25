@@ -307,7 +307,7 @@ jobs:
       - name: Install base packages
         run: |
           sudo arch-chroot ./mountpoint bash - <<'EOF'
-          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go cargo bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad totem mpv-iris ffmpeg-iris brave-bin
+          pacman -S --noconfirm networkmanager bluez bluez-utils vulkan-freedreno iio-sensor-proxy psmisc dosfstools i2c-tools ntfs-3g iris-vaapi git base-devel go cargo bleachbit kate noto-fonts-cjk fcitx5-im fcitx5-chinese-addons fcitx5-rime ffmpegthumbnailer gst-libav gst-plugins-bad totem mpv-iris ffmpeg-iris brave-bin xdg-user-dirs
           systemctl enable iio-sensor-proxy || true
           EOF
 
@@ -333,7 +333,9 @@ jobs:
           XDG_MUSIC_DIR="$HOME/Music"
           XDG_PICTURES_DIR="$HOME/Pictures"
           XDG_VIDEOS_DIR="$HOME/Videos"
+          XDG_PROJECTS_DIR="$HOME/Projects"
           EOL
+          mkdir -p /home/wdgu/{Desktop,Downloads,Templates,Public,Documents,Music,Pictures,Videos,Projects}
           printf '%s\n' 'zh_CN.UTF-8' > /home/wdgu/.config/user-dirs.locale
           chown -R wdgu:wdgu /home/wdgu
           EOF
